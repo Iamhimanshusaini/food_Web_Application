@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@keyframes food-progress {
+  0% {
+    transform: translateX(-120%);
+  }
+
+  100% {
+    transform: translateX(260%);
+  }
+}
+
+.animate-food-progress {
+  animation: food-progress 1.2s ease-in-out infinite;
+}
