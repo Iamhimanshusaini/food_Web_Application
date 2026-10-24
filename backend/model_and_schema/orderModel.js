@@ -6,11 +6,15 @@ const orderSchema = new mongoose.Schema(
             require: true
         },
         // Customer details
-        // customer: {
-        //     type: mongoose.Schema.Types.ObjectId,
-        //     ref: "Customer",
-        //     required: true,
-        // },
+        customerId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Customer",
+            required: true
+        },
+        customer: {
+            type: String,
+            required: true
+        },
 
         // Ordered products
         items: [
@@ -20,6 +24,11 @@ const orderSchema = new mongoose.Schema(
                 //     ref: "Product",
                 //     required: true,
                 // },
+                restaurantId: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "Restaurant",
+                    required: true,
+                },
 
                 name: {
                     type: String,
@@ -45,7 +54,7 @@ const orderSchema = new mongoose.Schema(
 
                 subtotal: {
                     type: Number,
-                    required: true,
+                    // required: true,
                     min: 0,
                 },
             },
@@ -123,14 +132,17 @@ const orderSchema = new mongoose.Schema(
         // Payment details
         paymentMethod: {
             type: String,
-            enum: ["COD", "RAZORPAY"],
+            enum: ["cod", "RAZORPAY"],
             default: "COD",
+            // lowercase: true,
+            trim: true,
         },
 
         paymentStatus: {
             type: String,
             enum: ["PENDING", "PAID", "FAILED", "REFUNDED"],
             default: "PENDING",
+            // lowercase: true,
         },
 
         razorpayOrderId: {
@@ -147,13 +159,15 @@ const orderSchema = new mongoose.Schema(
         orderStatus: {
             type: String,
             enum: [
-                "PLACED",
-                "CONFIRMED",
-                "PREPARING",
-                "READY",
-                "OUT_FOR_DELIVERY",
-                "DELIVERED",
-                "CANCELLED",
+                "pending",
+                "Confirmed",
+                "preparing",
+                "ready",
+                "picked_up",
+                "out_for_delivery",
+                "cancelled",
+                "rejected",
+                "refunded"
             ],
             default: "PLACED",
         },
@@ -191,4 +205,4 @@ const orderSchema = new mongoose.Schema(
 
 const OrderModel = mongoose.model("Order", orderSchema);
 
-module.exports =OrderModel
+module.exports = OrderModel

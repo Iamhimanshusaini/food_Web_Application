@@ -17,11 +17,9 @@ import Profile from "./pages/Profile";
 import Favorites from "./pages/Favorites";
 import NotFound from "./pages/NotFound";
 import VerifyOTP from "./pages/VerifyOTP";
-
 import AdminDashboard from "./restaurantAdmin/AdminDashboard";
 import CreateRestaurant from "./restaurantAdmin/CreateRestaurant";
-import { useState,useEffect } from "react";
-
+import { useState, useEffect } from "react";
 // Navbar and Footer sirf customer pages par dikhenge
 function UserLayout() {
   return (
@@ -89,6 +87,7 @@ export default function App() {
         path="/rs-admin"
         element={<AdminDashboard />}
       />
+      
     </Routes>
   );
 }

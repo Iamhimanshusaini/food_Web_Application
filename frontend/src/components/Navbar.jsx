@@ -31,7 +31,7 @@ export default function Navbar() {
   const nav = [
     ["/", "Home"],
     ["/restaurants", "Restaurants"],
-    ["/orders", "Orders"],
+    // ["/orders", "Orders"],
   ];
 
   const closeSidebar = () => setProfileOpen(false);

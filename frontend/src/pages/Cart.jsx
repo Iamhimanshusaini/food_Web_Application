@@ -13,14 +13,28 @@ export default function Cart() {
     <div className="page-heading"><span className="eyebrow">YOUR ORDER</span><h1>Shopping cart</h1><p>{cart.reduce((s, i) => s + i.quantity, 0)} items in your cart</p></div>
     <div className="checkout-grid">
       <div className="cart-list">
-        {cart.map(item => <div className="cart-item" key={item.id}>
-          <img src={item.image} alt={item.name} />
-          <div className="cart-item-info"><h3>{item.name}</h3><p>{item.category}</p><strong>₹{item.price}</strong></div>
-          <div className="quantity"><button onClick={() => decrease(item.id)}><Minus size={15} /></button><b>{item.quantity}</b><button onClick={() => addToCart(item)}><Plus size={15} /></button></div>
-          <div className="item-total">₹{item.price * item.quantity}</div>
-          <button className="delete-btn" onClick={() => removeFromCart(item.id)}><Trash2 size={18} /></button>
-        </div>)}
-        <div className="coupon"><Tag size={18} /><input placeholder="Enter coupon code" /><button>Apply</button></div>
+        {cart.map(item =>
+          <div className="cart-item" key={item.id}>
+            <img src={item.image} alt={item.name} />
+            <div className="cart-item-info"><h3>{item.name}</h3><p>{item.category}</p><strong>₹{item.price}</strong>
+            </div>
+            <div className="quantity">
+              <button onClick={() => decrease(item.id)}><Minus size={15} />
+              </button>
+              <b>{item.quantity}</b>
+              <button onClick={() => addToCart(item)}><Plus size={15} /></button>
+            </div>
+            <div className="item-total">
+              ₹{item.price * item.quantity}
+
+            </div>
+            <button className="delete-btn" onClick={() => removeFromCart(item.id)}>
+              <Trash2 size={18} />
+            </button>
+          </div>)}
+        <div className="coupon"><Tag size={18} /><input placeholder="Enter coupon code" />
+          <button>Apply</button>
+        </div>
       </div>
       <aside className="summary">
         <h2>Bill details</h2>
@@ -29,11 +43,11 @@ export default function Cart() {
         {
           user ? (
             <button className="primary-btn full" onClick={() => navigate("/checkout")}>
-               Proceed to checkout <ArrowRight size={18} />
+              Proceed to checkout <ArrowRight size={18} />
             </button>
           ) : (
             <button className="primary-btn full" onClick={() => navigate("/login")}>
-               Login
+              Login
             </button>
           )
 

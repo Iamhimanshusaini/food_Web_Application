@@ -11,31 +11,33 @@ export default function Checkout() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [payment, setPayment] = useState("online");
-  const [address, setAddress] = useState({ name: user?.name || "", phone: "", line: "", city: "", pincode: "" });
+  const [address, setAddress] = useState({ fullName: user?.name || "", phone: "", address: "", city: "", state: '', pincode: "" });
   const [placed, setPlaced] = useState(false);
 
   const orderId = `ORD${Math.floor(10000 + Math.random() * 90000)}`;
-  
-  console.log(cart,subtotal,total)
+
+  console.log(cart, subtotal, total)
   const orderData = {
-    customer: user._id,
-    orderId,
+    customer: user.name,
+    customerId: user._id,
+    email: user.email,
+    orderId: orderId,
     items: cart,
     subtotal,
     deliveryCharge: deliveryFee,
     total,
-    address,
+    deliveryAddress: address,
     paymentMethod: payment,
     orderStatus: "Confirmed"
   }
+  console.log(orderData)
   const onSubmit = async (e) => {
     e.preventDefault();
     if (!cart.length) return navigate("/cart");
     try {
       const res = await axios.post(`${API}/create-order`,
-        {
-          orderData
-        },
+        orderData
+        ,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -50,8 +52,6 @@ export default function Checkout() {
       console.log(error.message)
       alert(error.response?.data?.message)
     }
-    // localStorage.setItem("foodly_last_order", JSON.stringify({ orderId, total, status: "Confirmed", items: cart, address, payment }));
-
 
   };
 
@@ -64,8 +64,8 @@ export default function Checkout() {
         <section className="form-card">
           <h2><MapPin /> Delivery address</h2>
           <div className="form-grid">
-            <input required placeholder="Full name" value={address.name} onChange={e => setAddress({ ...address, name: e.target.value })} />
-            <input required placeholder="Phone number" value={address.phone} onChange={e => setAddress({ ...address, phone: e.target.value })} /><input required className="full-input" placeholder="House no., street, area" value={address.line} onChange={e => setAddress({ ...address, line: e.target.value })} />
+            <input required placeholder="Full name" value={address.fullName} onChange={e => setAddress({ ...address, fullName: e.target.value })} />
+            <input required placeholder="Phone number" value={address.phone} onChange={e => setAddress({ ...address, phone: e.target.value })} /><input required className="full-input" placeholder="House no., street, area" value={address.address} onChange={e => setAddress({ ...address, address: e.target.value })} />
             <input required placeholder="City" value={address.city} onChange={e => setAddress({ ...address, city: e.target.value })} />
             <input required placeholder="Pincode" value={address.pincode} onChange={e => setAddress({ ...address, pincode: e.target.value })} /></div>
         </section>
