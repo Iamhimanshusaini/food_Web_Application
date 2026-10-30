@@ -12,6 +12,7 @@ import Checkout from "./pages/Checkout";
 import Orders from "./pages/Orders";
 import OrderDetails from "./pages/OrderDetails";
 import Login from "./pages/Login";
+import Forgot from "./pages/forrgotPassword";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import Favorites from "./pages/Favorites";
@@ -19,6 +20,7 @@ import NotFound from "./pages/NotFound";
 import VerifyOTP from "./pages/VerifyOTP";
 import AdminDashboard from "./restaurantAdmin/AdminDashboard";
 import CreateRestaurant from "./restaurantAdmin/CreateRestaurant";
+import SuperAdminRoutes from "./superAdmin/SuperAdminRoutes";
 import { useState, useEffect } from "react";
 // Navbar and Footer sirf customer pages par dikhenge
 function UserLayout() {
@@ -60,7 +62,6 @@ export default function App() {
           path="/restaurant/:id"
           element={<RestaurantDetails />}
         />
-
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
 
@@ -71,6 +72,8 @@ export default function App() {
         <Route path="/profile" element={<Profile />} />
 
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot" element={<Forgot />} />
+
         <Route path="/register" element={<Register />} />
         <Route path="/verify-otp" element={<VerifyOTP />} />
 
@@ -87,7 +90,11 @@ export default function App() {
         path="/rs-admin"
         element={<AdminDashboard />}
       />
-      
+      <Route
+          path="/super-admin/*"
+          element={<SuperAdminRoutes />}
+        />
     </Routes>
+
   );
 }

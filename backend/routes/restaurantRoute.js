@@ -1,6 +1,7 @@
 
 const express = require("express");
 const router = express.Router();
+const upload = require('../middleware/upload')
 const authMiddleware = require('../middleware/authMiddleware')
 const {
   createRestaurant,
@@ -25,7 +26,7 @@ router.get('/restaurant/categories', getAllCategory)
 router.get('/restaurant/foods', getAllProduct)
 router.get('/restaurants', getAllRestaurant)
 
-router.post("/create-restaurant", authMiddleware, createRestaurant);
+router.post("/create-restaurant", authMiddleware, upload.single("image"),createRestaurant);
 
 router.post('/restaurant/category-create', authMiddleware, createCategory)
 router.get('/restaurant/categories/category', authMiddleware, getCategoryByRetaId)

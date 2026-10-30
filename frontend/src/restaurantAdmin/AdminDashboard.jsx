@@ -42,6 +42,7 @@ export default function RestaurantManagement() {
     const [search, setSearch] = useState("");
     const [showForm, setShowForm] = useState(false)
     const [editIndex, setEditIndex] = useState(null)
+
     // Demo state: replace with API data
     const [categories, setCategories] = useState([]);
     // console.log(categories)
@@ -52,23 +53,24 @@ export default function RestaurantManagement() {
 
     // Check logged-in user's role and restaurant
     const isAdmin = user?.role === "restaurantOwner" && user.isApproved === true;
-    const notApproval = user.isApproved === false;
+    // const notApproval = user.isApproved === false;
     const restaurantId = user?.restaurantId
-    // console.log(user)
+
+    
     const notify = (text) => {
         setMessage(text);
         setTimeout(() => setMessage(""), 2500);
     };
-    if (notApproval) {
-        return (
-            <AccessMessage
-                title="Login required"
-                description="your Restaurant Is not approval"
-                buttonText="Please contact Administor"
-                onClick={() => { navigate("/"), logout() }}
-            />
-        );
-    }
+    // if (notApproval) {
+    //     return (
+    //         <AccessMessage
+    //             title="Login required"
+    //             description="your Restaurant Is not approval"
+    //             buttonText="Please contact Administor"
+    //             onClick={() => { navigate("/"), logout() }}
+    //         />
+    //     );
+    // }
     // Role check
     if (!user) {
         return (

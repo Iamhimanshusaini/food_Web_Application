@@ -100,9 +100,11 @@ const updateOrderStatus = async (req, res) => {
         });
     }
 };
-const getOrders = async(req, res) => {
+const getOrders = async (req, res) => {
     try {
         const orders = await OrderModel.find()
+            .populate("customerId")
+            .populate("items.restaurantId")
         if (!orders) {
             return res.status(401).json({
                 message: "Order not found",

@@ -2,13 +2,15 @@ const Customer = require('../model_and_schema/signupModel');
 const Restaurant = require("../model_and_schema/RestaurantModel");
 const CategoryModel = require('../model_and_schema/categoryModel')
 const ProductModel = require('../model_and_schema/ProductModel')
+const transporter = require("../config/nodemailerConfig")
+const restaurantApprovalTemplate = require("../utils/approvalsMailTemplate")
 
 const createRestaurant = async (req, res) => {
   let restaurant;
 
   try {
     const userId = req.user.id; // JWT middleware se aayega
-
+    const imageUrl = req.file?.path || "";
     const { name, phone, email, address, location, cuisine, image, rating, deliveryTime, deliveryFee, offer } = req.body;
 
     if (!name || !phone || !email || !address || !cuisine) {
@@ -17,9 +19,30 @@ const createRestaurant = async (req, res) => {
         message: "Please fill all required fields",
       });
     }
+    const foundRestaurant = await Restaurant.findOne({
+      $or: [
+        { email: email.trim().toLowerCase() },
+        { phone: phone.trim() },
+      ],
+    });
 
+    if (foundRestaurant) {
+      if (foundRestaurant.email === email.trim().toLowerCase()) {
+        return res.status(400).json({
+          success: false,
+          message: "This email is already registered.",
+        });
+      }
+
+      if (foundRestaurant.phone === phone.trim()) {
+        return res.status(400).json({
+          success: false,
+          message: "This phone number is already registered.",
+        });
+      }
+    }
     const user = await Customer.findById(userId);
-    console.log(user)
+
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -43,13 +66,13 @@ const createRestaurant = async (req, res) => {
       address,
       cuisine,
       location,
-      image: image || "",
+      image: imageUrl || "",
       ownerId: user._id,
       rating,
       deliveryTime,
       deliveryFee,
       offer,
-      isOpen:true,
+      isOpen: true,
       isApproved: false,
     });
 
@@ -63,6 +86,20 @@ const createRestaurant = async (req, res) => {
     if (user.role === "user") {
       user.role = "restaurantOwner";
     }
+
+    await transporter.sendMail({
+      from: `"Foodly" <${process.env.EMAIL_USER}>`,
+      to: process.env.SUPER_ADMIN_EMAIL,
+      subject: `New Restaurant Approval Required: ${restaurant.name}`,
+      html: restaurantApprovalTemplate({
+        restaurantName: restaurant.name,
+        ownerName: user.name,
+        email: restaurant.email,
+        phone: restaurant.phone,
+        address: restaurant.address,
+        dashboardUrl: process.env.SUPER_ADMIN_URL,
+      }),
+    });
 
     await user.save();
 
@@ -161,7 +198,9 @@ const productCreate = async (req, res) => {
 }
 const getAllRestaurant = async (req, res) => {
   try {
-    const restaurant = await Restaurant.find()
+    const restaurant = await Restaurant.find({
+      isApproved: true,
+    });
     res.status(201).json({
       success: true,
       message: 'find all',

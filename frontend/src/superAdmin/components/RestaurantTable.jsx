@@ -46,7 +46,7 @@ export default function RestaurantTable({ restaurants, onStatusChange, onView, a
               <td className="px-5 py-4"><p className="text-sm font-medium text-slate-700">{restaurant.owner}</p><p className="mt-1 text-xs text-slate-400">{restaurant.email}</p></td>
               <td className="px-5 py-4"><span className="rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs font-medium text-slate-600">{restaurant.category}</span></td>
               <td className="px-5 py-4"><StatusBadge status={restaurant.status} /></td>
-              <td className="px-5 py-4 text-sm font-semibold text-slate-700">{restaurant.orders.toLocaleString("en-IN")}</td>
+              <td className="px-5 py-4 text-sm font-semibold text-slate-700">{(restaurant.totalRevenue ?? 0).toLocaleString("en-IN")}</td>
               <td className="px-5 py-4">{restaurant.rating > 0 ? <span className="inline-flex items-center gap-1 text-sm font-semibold text-slate-700"><Star size={15} className="fill-amber-400 text-amber-400" />{restaurant.rating.toFixed(1)}</span> : <span className="text-xs text-slate-400">No ratings</span>}</td>
               <td className="px-5 py-4"><div className="flex items-center justify-end gap-2">
                 <button title="View details" onClick={() => onView(restaurant)} className="rounded-lg border border-slate-200 p-2 text-slate-500 hover:border-orange-200 hover:bg-orange-50 hover:text-orange-600"><Eye size={16} /></button>

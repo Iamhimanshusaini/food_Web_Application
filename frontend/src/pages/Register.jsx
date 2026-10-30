@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { User, Mail, Phone, Lock } from "lucide-react";
+import { User, Mail, Phone, Lock,CheckCircle } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { AuthLayout } from "./Login";
@@ -12,8 +12,12 @@ export default function Register() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false)
-  const [alertMsg, setAlertMsg] = useState('')
 
+  const [alertMsg, setAlertMsg] = useState('')
+  const notify = (text) => {
+    setAlertMsg(text);
+    setTimeout(() => setMessage(""), 2500);
+  };
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -30,20 +34,19 @@ export default function Register() {
 
   const onSubmitHandle = async (e) => {
     e.preventDefault();
-    setAlertMsg('')
+    notify('')
     setLoading(true)
     try {
       const res = await axios.post(`${API}/signup`, formData)
       if (res.data.success) {
-        setAlertMsg(res.data.message)
+        notify(res.data.message)
       }
-      localStorage.setItem("regiterEmail", formData.email);
 
-      navigate('/verify-otp')
-      setAlertMsg(res.data.message)
+      navigate(`/verify-otp?email=${encodeURIComponent(formData.email)}`)
+      notify(res.data.message)
 
     } catch (error) {
-      setAlertMsg(error.response?.data?.message)
+      notify(error.response?.data?.message)
       console.log(error.response?.data?.message)
       console.log(error)
       setLoading(false)
@@ -116,9 +119,10 @@ export default function Register() {
           I agree to the Terms & Conditions
         </label>
         {alertMsg && (
-          <p className="rounded-2xl bg-red-500/15 px-4 py-3 text-sm font-semibold text-red-200">
+          <div className="fixed bottom-5 right-5 z-[70] flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-4 text-sm font-semibold text-white shadow-xl">
+            <CheckCircle size={18} className="text-emerald-400" />
             {alertMsg}
-          </p>
+          </div>
         )}
         <button type="submit" className="primary-btn full">
           {loading ? (

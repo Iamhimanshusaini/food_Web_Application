@@ -2,15 +2,18 @@ const signupModel = require('../model_and_schema/signupModel')
 const crypto = require('crypto')
 const transporter = require('../config/nodemailerConfig')
 const bcrypt = require('bcrypt')
-const otpStore = new Map()
+
 const jwt = require('jsonwebtoken')
+const otpTemplate = require("../utils/otpTemplate")
+const welcomeTemplate = require("../utils/welcomeMailTemplate")
+
+const otpStore = new Map()
 
 const addUser = async (req, res) => {
 
     const formData = req.body
     const email = formData.email
-
-    // console.log(email)
+    const name = formData.name
     try {
 
         if (!formData.name || !formData.email || !formData.phone || !formData.password) {
@@ -44,16 +47,15 @@ const addUser = async (req, res) => {
 
         const otp = crypto.randomInt(100000, 1000000)
         console.log(`otp :${otp}`)
-        // const otpMail = transporter.sendMail({
-        //     from: process.env.EMAIL_ID,
-        //     to: email,
-        //     subject: "Foodly Email Verification",
-        //     html: `
-        // <h2>Welcome to Foodly!</h2>
-        // <p>Your email verification code is:</p>
-        // <h1>${otp}</h1>
-        // <p>This code expires in 5 minutes.</p>`,
-        // })
+
+
+        const otpMail = await transporter.sendMail({
+            from: process.env.EMAIL_ID,
+            to: email,
+            subject: "Foodly Email Verification",
+            html: otpTemplate(name, otp)
+        })
+
         otpStore.set(email, {
             name: formData.name,
             email: formData.email,
@@ -75,16 +77,49 @@ const addUser = async (req, res) => {
         });
     }
 }
+const forgotPaaword = async (req, res) => {
+    const normalizedEmail = req.body.email.toLowerCase().trim()
+    try {
+        const otp = crypto.randomInt(100000, 1000000).toString()
+
+        const findUser = await signupModel.find({ email: normalizedEmail })
+
+        if (!findUser) {
+            res.status(400).json({
+                success: false,
+                message: 'user record not found'
+            })
+        }
+
+        const sendMail = await transporter.sendMail({
+            from: process.env.EMAILID,
+            to: normalizedEmail,
+            subject: 'Reset verification Code',
+            html: otp
+        })
+        res.status(200).json({
+            message: "Verfication Code send your Registered Email..",
+            success: true
+        })
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: error.message || 'somethig went worng'
+        })
+    }
+
+}
 const otpVerify = async (req, res) => {
 
     const { email, fillOtp } = req.body
-
+ 
     try {
         if (!email || !fillOtp) {
             return res.status(400).json({
                 message: "Email and OTP are required",
             });
         }
+
         const normalizedEmail = email.trim().toLowerCase();
         const pending = otpStore.get(normalizedEmail)
 
@@ -112,18 +147,25 @@ const otpVerify = async (req, res) => {
         //////////////////////////
         // check otp match and not
         //////////////////////////
+
         console.log(String(fillOtp).trim(), String(pending.otp).trim())
+
         if (String(fillOtp).trim() === String(pending.otp).trim()) {
             const saveCustomer = await signupModel.create({
                 name: pending.name,
                 email: pending.email,
                 phone: pending.phone.trim(),
                 password: pending.password,
-                role:pending.role,
-                restaurantId:null,
+                role: pending.role,
+                restaurantId: null,
                 isEmailVerified: true
             })
-           
+            const welcomeMail = await transporter.sendMail({
+                from: process.env.EMAIL_ID,
+                to: pending.email,
+                subject: `🎉 Welcome to Foodly –${saveCustomer.name}`,
+                html: welcomeTemplate(saveCustomer.name)
+            })
             otpStore.delete(normalizedEmail)
 
             console.log(saveCustomer)
@@ -149,4 +191,4 @@ const otpVerify = async (req, res) => {
 
 }
 
-module.exports = { addUser, otpVerify }
+module.exports = { addUser, otpVerify, forgotPaaword }

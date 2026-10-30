@@ -8,6 +8,7 @@ import { useSuperAdmin } from "../context/SuperAdminContext";
 
 export default function Approvals() {
   const { restaurants, updateRestaurantStatus } = useSuperAdmin();
+
   const [selected, setSelected] = useState(null);
   const [notification, setNotification] = useState("");
   const pending = restaurants.filter(r => r.status === "Pending").length;

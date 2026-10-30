@@ -14,6 +14,10 @@ export default function Login() {
   const [show, setShow] = useState(false);
   const [alertMsg, setAlertMsg] = useState('')
 
+  const notify = (text) => {
+    setAlertMsg(text);
+    setTimeout(() => setMessage(""), 2500);
+  };
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -27,12 +31,11 @@ export default function Login() {
   }
   const submit = async (e) => {
     e.preventDefault();
-    setAlertMsg('')
     setLoading(true)
     try {
       const res = await axios.post(`${API}/login`, formData)
       console.log(res)
-      setAlertMsg(res.data.message)
+      notify(res.data.message)
       if (res.data.success) {
 
         login(res.data.customerUser, res.data.token)
@@ -42,10 +45,13 @@ export default function Login() {
         return navigate('/rs-admin')
 
       }
+      if (res.data.customerUser.role === "super-admin") {
+        return navigate('/super-admin')
+      }
       navigate('/')
 
     } catch (error) {
-      setAlertMsg(error.response?.data?.message || "Something went wrong");
+      notify(error.response?.data?.message || "Something went wrong");
       console.log(error.response?.data?.message)
     } finally {
       setLoading(false)
@@ -100,9 +106,14 @@ export default function Login() {
             Remember me
           </label>
 
-          <a href="#">Forgot password?</a>
+          <Link to="/forgot">Forgot password?</Link>
         </div>
-
+        {alertMsg && (
+          <div className="fixed bottom-5 right-5 z-[70] flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-4 text-sm font-semibold text-white shadow-xl">
+            <CheckCircle size={18} className="text-emerald-400" />
+            {alertMsg}
+          </div>
+        )}
         <button type="submit" className="primary-btn full">
           {
             loading === true ? (

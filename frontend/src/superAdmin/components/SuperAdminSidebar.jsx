@@ -1,11 +1,11 @@
 import { NavLink } from "react-router-dom";
 import { LayoutDashboard, Store, ClipboardList, Users, Star, Settings, Utensils, LogOut, ArrowUpRight, X, ShoppingBag } from "lucide-react";
 import { useSuperAdmin } from "../context/SuperAdminContext";
-
+import { useAuth } from "../../context/AuthContext";
 const navigation = [
   { label: "Overview", path: "/super-admin", icon: LayoutDashboard, end: true },
   { label: "Restaurants", path: "/super-admin/restaurants", icon: Store },
-  { label: "Approvals", path: "/super-admin/approvals", icon: ClipboardList },
+  // { label: "Approvals", path: "/super-admin/approvals", icon: ClipboardList },
   { label: "Orders", path: "/super-admin/orders", icon: ShoppingBag },
   { label: "Customers", path: "/super-admin/customers", icon: Users },
   { label: "Reviews", path: "/super-admin/reviews", icon: Star },
@@ -14,6 +14,8 @@ const navigation = [
 
 export default function SuperAdminSidebar({ isOpen, onClose }) {
   const { restaurants } = useSuperAdmin();
+  const { user, logout } = useAuth()
+
   const pendingCount = restaurants.filter((restaurant) => restaurant.status === "Pending").length;
 
   return <>
@@ -42,7 +44,8 @@ export default function SuperAdminSidebar({ isOpen, onClose }) {
           <p className="mt-1 text-xs leading-5 text-orange-50">Keep track of restaurants and grow your food business.</p>
           <NavLink to="/super-admin/restaurants" onClick={onClose} className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-white py-2.5 text-xs font-bold text-orange-600 hover:bg-orange-50">Manage restaurants <ArrowUpRight size={14} /></NavLink>
         </div>
-        <button onClick={() => { localStorage.removeItem("superAdminToken"); window.location.href = "/login"; }} className="mt-4 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-red-600"><LogOut size={18} />Sign out</button>
+        <button onClick={() => { logout(); window.location.href = "/login"; }} className="mt-4 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-red-600"><LogOut size={18} />Sign out</button>
+        <span>ID: {user._id}</span>
       </div>
     </aside>
   </>;

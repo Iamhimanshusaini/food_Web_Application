@@ -10,6 +10,7 @@ import {
 
 export default function RestaurantCard({ restaurant }) {
   const isOpen = restaurant.isOpen === true;
+  const closingTime= restaurant.closingTime
 
   return (
     <>

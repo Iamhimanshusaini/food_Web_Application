@@ -8,10 +8,13 @@ import Loader from "../components/Loader"
 
 import API from "../api/api"
 
+import { useSearchParams } from "react-router-dom";
+
 export default function VerifyOTP() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  const email = localStorage.getItem("regiterEmail");
+  const email = searchParams.get("email");
 
   const [fillOtp, setFillOtp] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,7 +33,7 @@ export default function VerifyOTP() {
       return;
     }
 
-    
+
 
     try {
 
@@ -40,8 +43,6 @@ export default function VerifyOTP() {
       })
 
       setSuccess(res.data.message);
-
-      localStorage.removeItem("regiterEmail");
 
       setTimeout(() => {
         navigate("/login", { replace: true });

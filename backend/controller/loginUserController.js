@@ -1,10 +1,10 @@
 const signupModel = require('../model_and_schema/signupModel')
 const jwt = require('jsonwebtoken')
 
-const bcrypt= require('bcrypt')
+const bcrypt = require('bcrypt')
 const loginUser = async (req, res) => {
     try {
-        const formData= req.body;
+        const formData = req.body;
 
         // 1. Validate fields
         if (!formData.email || !formData.password) {
@@ -20,7 +20,7 @@ const loginUser = async (req, res) => {
         // 3. Find customer in MongoDB
         const customer = await signupModel.findOne({
             email: normalizedEmail,
-        });
+        })
 
         if (!customer) {
             return res.status(401).json({
@@ -56,7 +56,7 @@ const loginUser = async (req, res) => {
             {
                 id: customer._id,
                 email: customer.email,
-                restaurantId:customer.restaurantId
+                restaurantId: customer.restaurantId
             },
             process.env.JWT_SECRET,
             {
@@ -86,4 +86,4 @@ const loginUser = async (req, res) => {
     }
 };
 
-module.exports= loginUser
+module.exports = loginUser

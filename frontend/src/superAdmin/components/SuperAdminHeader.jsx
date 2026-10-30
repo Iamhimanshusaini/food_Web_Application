@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Bell, CalendarDays, ChevronDown, Menu } from "lucide-react";
 import { useSuperAdmin } from "../context/SuperAdminContext";
-
+import { useAuth } from "../../context/AuthContext";
 const pageNames = {
   "/super-admin": "Overview",
   "/super-admin/restaurants": "Restaurants",
@@ -13,10 +13,12 @@ const pageNames = {
 };
 
 export default function SuperAdminHeader({ onMenuClick }) {
+  const { user } = useAuth()
   const location = useLocation();
   const navigate = useNavigate();
   const { restaurants } = useSuperAdmin();
   const page = pageNames[location.pathname] || "Overview";
+
   const pendingCount = restaurants.filter((restaurant) => restaurant.status === "Pending").length;
 
   return (
@@ -29,7 +31,7 @@ export default function SuperAdminHeader({ onMenuClick }) {
         <div className="hidden items-center gap-2 rounded-xl bg-slate-50 px-3 py-2.5 text-xs text-slate-500 md:flex"><CalendarDays size={15} /><span>{new Date().toLocaleDateString("en-IN", { month: "long", year: "numeric" })}</span><ChevronDown size={14} /></div>
         <button onClick={() => navigate("/super-admin/approvals")} className="relative rounded-xl border border-slate-100 p-2.5 text-slate-500 transition hover:bg-orange-50 hover:text-orange-600" aria-label="Notifications"><Bell size={19} />{pendingCount > 0 && <span className="absolute right-2 top-2 h-2 w-2 rounded-full border-2 border-white bg-orange-500" />}</button>
         <div className="hidden h-8 w-px bg-slate-200 sm:block" />
-        <div className="flex items-center gap-2.5 text-left"><div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 text-sm font-bold text-orange-700 ring-2 ring-orange-50">SA</div><div className="hidden sm:block"><p className="text-sm font-bold text-slate-800">Admin User</p><p className="text-xs text-slate-400">Super Admin</p></div></div>
+        <div className="flex items-center gap-2.5 text-left"><div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 text-sm font-bold text-orange-700 ring-2 ring-orange-50">{user.name.charAt(0)}</div><div className="hidden sm:block"><p className="text-sm font-bold text-slate-800">{user.name}</p><p className="text-xs text-slate-400">Super Admin</p></div></div>
       </div>
     </header>
   );
